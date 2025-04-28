@@ -1,4 +1,4 @@
-import { NewComment } from "../\bmodel/comment"
+import { NewComment } from "../model/comment"
 
 export const addCommentWithNewComment = async (newComment: NewComment) => {
   const response = await fetch("/api/comments/add", {

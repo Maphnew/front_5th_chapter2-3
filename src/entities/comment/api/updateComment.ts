@@ -1,4 +1,4 @@
-import { Comment } from "../\bmodel/comment"
+import { Comment } from "../model/comment"
 
 export const updateCommentWithComment = async (selectedComment: Comment | null) => {
   if (selectedComment === null) throw new Error("Error! Please provide a comment to update the comment.")

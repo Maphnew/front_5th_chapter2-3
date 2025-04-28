@@ -1,4 +1,4 @@
-import { Comment } from "../\bmodel/comment"
+import { Comment } from "../model/comment"
 
 interface LikeCommentProps {
   commentId: Comment["id"]
