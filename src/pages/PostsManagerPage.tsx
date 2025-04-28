@@ -25,6 +25,14 @@ import {
   TableRow,
   Textarea,
 } from "../shared/ui"
+import {
+  fetchCommentsByPostId,
+  addCommentWithNewComment,
+  updateCommentWithComment,
+  deleteCommentWithCommentId,
+  likeCommentWithComment,
+} from "../entities/comment/api"
+import { fetchPostsWithPagination } from "../entities/post/api"
 
 const PostsManager = () => {
   const navigate = useNavigate()
@@ -68,17 +76,14 @@ const PostsManager = () => {
   }
 
   // 게시물 가져오기
-  const fetchPosts = () => {
+  const fetchPosts = async () => {
     setLoading(true)
     let postsData
     let usersData
 
-    fetch(`/api/posts?limit=${limit}&skip=${skip}`)
-      .then((response) => response.json())
-      .then((data) => {
-        postsData = data
-        return fetch("/api/users?limit=0&select=username,image")
-      })
+    postsData = await fetchPostsWithPagination(limit, skip)
+
+    fetch("/api/users?limit=0&select=username,image")
       .then((response) => response.json())
       .then((users) => {
         usersData = users.users
@@ -203,8 +208,7 @@ const PostsManager = () => {
   const fetchComments = async (postId) => {
     if (comments[postId]) return // 이미 불러온 댓글이 있으면 다시 불러오지 않음
     try {
-      const response = await fetch(`/api/comments/post/${postId}`)
-      const data = await response.json()
+      const data = fetchCommentsByPostId(postId)
       setComments((prev) => ({ ...prev, [postId]: data.comments }))
     } catch (error) {
       console.error("댓글 가져오기 오류:", error)
@@ -214,12 +218,7 @@ const PostsManager = () => {
   // 댓글 추가
   const addComment = async () => {
     try {
-      const response = await fetch("/api/comments/add", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newComment),
-      })
-      const data = await response.json()
+      const data = await addCommentWithNewComment(newComment)
       setComments((prev) => ({
         ...prev,
         [data.postId]: [...(prev[data.postId] || []), data],
@@ -234,12 +233,7 @@ const PostsManager = () => {
   // 댓글 업데이트
   const updateComment = async () => {
     try {
-      const response = await fetch(`/api/comments/${selectedComment.id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ body: selectedComment.body }),
-      })
-      const data = await response.json()
+      const data = await updateCommentWithComment(selectedComment)
       setComments((prev) => ({
         ...prev,
         [data.postId]: prev[data.postId].map((comment) => (comment.id === data.id ? data : comment)),
@@ -253,9 +247,7 @@ const PostsManager = () => {
   // 댓글 삭제
   const deleteComment = async (id, postId) => {
     try {
-      await fetch(`/api/comments/${id}`, {
-        method: "DELETE",
-      })
+      await deleteCommentWithCommentId(id)
       setComments((prev) => ({
         ...prev,
         [postId]: prev[postId].filter((comment) => comment.id !== id),
@@ -268,12 +260,8 @@ const PostsManager = () => {
   // 댓글 좋아요
   const likeComment = async (id, postId) => {
     try {
-      const response = await fetch(`/api/comments/${id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ likes: comments[postId].find((c) => c.id === id).likes + 1 }),
-      })
-      const data = await response.json()
+      const comment = comments[postId].find((c) => c.id === id)
+      const data = await likeCommentWithComment(id, comment)
       setComments((prev) => ({
         ...prev,
         [postId]: prev[postId].map((comment) =>
