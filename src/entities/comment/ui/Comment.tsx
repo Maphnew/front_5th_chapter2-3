@@ -1,8 +1,8 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, Textarea, Button } from "../../../shared/ui"
 import { Edit2, Plus, ThumbsUp, Trash2 } from "lucide-react"
-import { CommentAddDTO } from "../model"
+import { CommentAddDTO, Comment } from "../model"
 import { useComments } from "../api/queries"
-import { useAddComment } from "../api/mutations"
+import { useAddComment, useUpdateComment } from "../api/mutations"
 import { Post } from "../../post/model"
 
 export const Comments = ({
@@ -79,7 +79,6 @@ interface AddCommentDialogProps {
       userId: number
     }>
   >
-  addComment: () => void
 }
 
 export const AddCommentDialog = ({
@@ -91,8 +90,7 @@ export const AddCommentDialog = ({
 }: AddCommentDialogProps) => {
   const addComment = useAddComment(postId)
 
-  const handleAddComment = (e: React.FormEvent) => {
-    e.preventDefault()
+  const handleAddComment = () => {
     addComment.mutate(newComment)
     setShowAddCommentDialog(false)
     setNewComment({ body: "", postId: null, userId: 1 })
@@ -117,9 +115,10 @@ export const AddCommentDialog = ({
 }
 
 interface UpdateCommentDialogProps {
+  postId: Post["id"]
   showEditCommentDialog: boolean
   setShowEditCommentDialog: React.Dispatch<React.SetStateAction<boolean>>
-  selectedComment: CommentAddDTO | null
+  selectedComment: Comment | null
   setSelectedComment: React.Dispatch<
     React.SetStateAction<{
       body: string | any
@@ -131,12 +130,19 @@ interface UpdateCommentDialogProps {
 }
 
 export const UpdateCommentDialog = ({
+  postId,
   showEditCommentDialog,
   setShowEditCommentDialog,
   selectedComment,
   setSelectedComment,
-  updateComment,
 }: UpdateCommentDialogProps) => {
+  const updateComment = useUpdateComment(postId)
+
+  const handleUpdateComment = () => {
+    if(selectedComment === null) return
+    updateComment.mutate(selectedComment)
+    setShowEditCommentDialog(false)
+  }
   return (
     <Dialog open={showEditCommentDialog} onOpenChange={setShowEditCommentDialog}>
       <DialogContent>
@@ -149,7 +155,7 @@ export const UpdateCommentDialog = ({
             value={selectedComment?.body || ""}
             onChange={(e) => setSelectedComment({ ...selectedComment, body: e.target.value })}
           />
-          <Button onClick={updateComment}>댓글 업데이트</Button>
+          <Button onClick={handleUpdateComment}>댓글 업데이트</Button>
         </div>
       </DialogContent>
     </Dialog>

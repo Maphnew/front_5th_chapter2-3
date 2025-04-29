@@ -27,7 +27,7 @@ SelectTrigger.displayName = SelectPrimitive.Trigger.displayName
 
 interface SelectContentProps extends HTMLAttributes<HTMLDivElement> {
   className?: string
-  position: "popper" | "item-aligned" | undefined
+  position?: "popper" | "item-aligned" | undefined
 }
 
 export const SelectContent = forwardRef<HTMLDivElement, SelectContentProps>(
