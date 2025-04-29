@@ -1,6 +1,6 @@
-import { NewComment } from "../model/comment"
+import { CommentAddDTO } from "../model"
 
-export const addCommentWithNewComment = async (newComment: NewComment) => {
+export const addCommentWithNewComment = async (newComment: CommentAddDTO) => {
   const response = await fetch("/api/comments/add", {
     method: "POST",
     headers: { "Content-Type": "application/json" },

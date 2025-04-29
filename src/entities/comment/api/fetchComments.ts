@@ -1,4 +1,4 @@
-import { Comment } from "../model/comment"
+import { Comment } from "../model"
 
 type Response = {
   comments: Comment[]
