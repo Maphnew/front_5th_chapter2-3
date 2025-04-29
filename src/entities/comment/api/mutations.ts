@@ -17,6 +17,9 @@ export const useAddComment = (postId: Post["id"]) => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: commentKeys.list(postId) })
     },
+    onError: (error) => {
+      console.error("댓글 추가 오류:", error)
+    }
   })
 }
 
@@ -31,10 +34,13 @@ export const useUpdateComment = (postId: Post["id"]) => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: commentKeys.list(postId) })
     },
+    onError: (error) => {
+      console.error("댓글 업데이트 오류:", error)
+    }
   })
 }
 
-export const useLikeComment = () => {
+export const useLikeComment = (postId: Post["id"]) => {
   return useMutation({
     mutationFn: ({ commentId, comment }: LikeCommentProps) =>
       fetcher<string>({
@@ -42,13 +48,16 @@ export const useLikeComment = () => {
         method: "PATCH",
         data: { likes: comment.likes + 1 },
       }),
-    onSuccess: (data: string) => {
-      queryClient.invalidateQueries({ queryKey: commentKeys.detail(data) })
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: commentKeys.list(postId) })
     },
+    onError: (error) => {
+      console.error("댓글 좋아요 오류:", error)
+    }
   })
 }
 
-export const useDeleteComment = () => {
+export const useDeleteComment = (postId: Post["id"]) => {
   return useMutation({
     mutationFn: (commentId) =>
       fetcher({
@@ -56,7 +65,10 @@ export const useDeleteComment = () => {
         method: "DELETE",
       }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: commentKeys.lists() })
+      queryClient.invalidateQueries({ queryKey: commentKeys.list(postId) })
     },
+    onError: (error) => {
+      console.error("댓글 삭제 오류:", error)
+    }
   })
 }

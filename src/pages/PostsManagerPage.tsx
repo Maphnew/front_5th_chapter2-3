@@ -27,8 +27,6 @@ import {
 } from "../shared/ui"
 import {
   fetchCommentsByPostId,
-  deleteCommentWithCommentId,
-  likeCommentWithComment,
 } from "../entities/comment/api"
 import { fetchPostsWithPagination } from "../entities/post/api"
 import { AddCommentDialog, Comments, UpdateCommentDialog } from "../entities/comment/ui/Comment"
@@ -212,35 +210,6 @@ const PostsManager = () => {
       setComments((prev) => ({ ...prev, [postId]: data.comments }))
     } catch (error) {
       console.error("댓글 가져오기 오류:", error)
-    }
-  }
-
-  // 댓글 삭제
-  const deleteComment = async (id, postId) => {
-    try {
-      await deleteCommentWithCommentId(id)
-      setComments((prev) => ({
-        ...prev,
-        [postId]: prev[postId].filter((comment) => comment.id !== id),
-      }))
-    } catch (error) {
-      console.error("댓글 삭제 오류:", error)
-    }
-  }
-
-  // 댓글 좋아요
-  const likeComment = async (id, postId) => {
-    try {
-      const comment = comments[postId].find((c) => c.id === id)
-      const data = await likeCommentWithComment(id, comment)
-      setComments((prev) => ({
-        ...prev,
-        [postId]: prev[postId].map((comment) =>
-          comment.id === data.id ? { ...data, likes: comment.likes + 1 } : comment,
-        ),
-      }))
-    } catch (error) {
-      console.error("댓글 좋아요 오류:", error)
     }
   }
 
@@ -563,9 +532,7 @@ const PostsManager = () => {
               setSelectedComment={setSelectedComment}
               setShowEditCommentDialog={setShowEditCommentDialog}
               highlightText={highlightText}
-              likeComment={likeComment}
               searchQuery={searchQuery}
-              deleteComment={deleteComment}
             />
           </div>
         </DialogContent>
