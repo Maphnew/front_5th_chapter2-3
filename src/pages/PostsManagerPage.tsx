@@ -27,7 +27,7 @@ import {
 } from "../shared/ui"
 import { fetchPostsWithPagination } from "../entities/post/api"
 import { AddCommentDialog, Comments, UpdateCommentDialog } from "../entities/comment/ui/Comment"
-import { CommentAddDTO } from "../entities/comment/model"
+import { CommentAddDTO } from "../entities/comment/model/types"
 
 const PostsManager = () => {
   const navigate = useNavigate()
@@ -49,7 +49,6 @@ const PostsManager = () => {
   const [loading, setLoading] = useState(false) // server state
   const [tags, setTags] = useState([]) // server state
   const [selectedTag, setSelectedTag] = useState(queryParams.get("tag") || "") // client state
-  const [comments, setComments] = useState({}) // server state
   const [selectedComment, setSelectedComment] = useState(null) // client state
   const [newComment, setNewComment] = useState<CommentAddDTO>({ body: "", postId: null, userId: 1 }) // client state
   const [showAddCommentDialog, setShowAddCommentDialog] = useState(false) // client state
