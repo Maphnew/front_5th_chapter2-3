@@ -2,7 +2,8 @@ export type Comment = {
   id: number
   body: string
   postId: number
-  likes: number
+  likes?: number
+  isDeleted?: boolean
   user: {
     id: number
     username: string
