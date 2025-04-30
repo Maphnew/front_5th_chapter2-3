@@ -3,7 +3,7 @@ import { Edit2, Plus, ThumbsUp, Trash2 } from "lucide-react"
 import { CommentAddDTO, Comment } from "../model/types"
 import { useComments } from "../api/queries"
 import { useAddComment, useUpdateComment, useLikeComment, useDeleteComment } from "../api"
-import { Post } from "../../post/model"
+import { Post } from "../../post/model/types"
 
 export const Comments = ({
   postId,

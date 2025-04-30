@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query"
 import { fetcher } from "../../../shared/api/baseQueries"
-import { Post } from "../../post/model"
+import { Post } from "../../post/model/types"
 
 export const commentKeys = {
   all: ["comments"] as const,

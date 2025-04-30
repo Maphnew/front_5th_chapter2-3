@@ -3,7 +3,7 @@ import { fetcher } from "../../../shared/api/baseQueries"
 import { commentKeys } from "./queries"
 import { Comment, CommentAddDTO } from "../model/types"
 import { LikeCommentProps } from "../model/types"
-import { Post, PostComments } from "../../post/model"
+import { Post, PostComments } from "../../post/model/types"
 
 const erroMessage = "API 데이터에 해당 댓글이 존재하지 않습니다. (하지만 앱 작동을 위해 캐시 데이터는 수정됩니다)"
 
@@ -52,6 +52,9 @@ export const useUpdateComment = (postId: Post["id"]) => {
       })
     },
     onError: (error: Error, variables: Comment, context: unknown) => {
+      if (error.status !== 404) {
+        console.error("댓글 업데이트 오류:", error)
+      }
       queryClient.setQueriesData({ queryKey: commentKeys.list(postId) }, (prev: PostComments) => {
         return {
           ...prev,
@@ -87,6 +90,9 @@ export const useLikeComment = (postId: Post["id"]) => {
       })
     },
     onError: (error: Error, variables: LikeCommentProps, context: unknown) => {
+      if (error.status !== 404) {
+        console.error("댓글 좋아요 오류:" + error)
+      }
       queryClient.setQueriesData({ queryKey: commentKeys.list(postId) }, (prev: PostComments) => {
         return {
           ...prev,
@@ -121,6 +127,9 @@ export const useDeleteComment = (postId: Post["id"]) => {
       })
     },
     onError: (error: Error, variables: number | void, context: unknown) => {
+      if (error.status !== 404) {
+        console.error("댓글 삭제 오류:", error)
+      }
       queryClient.setQueriesData({ queryKey: commentKeys.list(postId) }, (prev: PostComments) => {
         return {
           ...prev,
