@@ -18,5 +18,5 @@ export type CommentAddDTO = {
 
 export interface LikeCommentProps {
   commentId: Comment["id"]
-  comment: Comment
+  likes: Comment["likes"]
 }

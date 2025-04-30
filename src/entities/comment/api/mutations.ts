@@ -41,11 +41,11 @@ export const useUpdateComment = (postId: Post["id"]) => {
 
 export const useLikeComment = (postId: Post["id"]) => {
   return useMutation({
-    mutationFn: ({ commentId, comment }: LikeCommentProps) =>
+    mutationFn: ({ commentId, likes }: LikeCommentProps) =>
       fetcher<string>({
         url: `/comments/${commentId}`,
         method: "PATCH",
-        data: { likes: comment.likes + 1 },
+        data: { likes: likes + 1 },
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: commentKeys.list(postId) })

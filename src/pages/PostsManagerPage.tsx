@@ -25,9 +25,6 @@ import {
   TableRow,
   Textarea,
 } from "../shared/ui"
-import {
-  fetchCommentsByPostId,
-} from "../entities/comment/api"
 import { fetchPostsWithPagination } from "../entities/post/api"
 import { AddCommentDialog, Comments, UpdateCommentDialog } from "../entities/comment/ui/Comment"
 import { CommentAddDTO } from "../entities/comment/model"
@@ -202,21 +199,9 @@ const PostsManager = () => {
     }
   }
 
-  // 댓글 가져오기
-  const fetchComments = async (postId) => {
-    if (comments[postId]) return // 이미 불러온 댓글이 있으면 다시 불러오지 않음
-    try {
-      const data = fetchCommentsByPostId(postId)
-      setComments((prev) => ({ ...prev, [postId]: data.comments }))
-    } catch (error) {
-      console.error("댓글 가져오기 오류:", error)
-    }
-  }
-
   // 게시물 상세 보기
   const openPostDetail = (post) => {
     setSelectedPost(post)
-    fetchComments(post.id)
     setShowPostDetailDialog(true)
   }
 

@@ -2,7 +2,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, Textarea, Button } fr
 import { Edit2, Plus, ThumbsUp, Trash2 } from "lucide-react"
 import { CommentAddDTO, Comment } from "../model"
 import { useComments } from "../api/queries"
-import { useAddComment, useUpdateComment, useLikeComment, useDeleteComment } from "../api/mutations"
+import { useAddComment, useUpdateComment, useLikeComment, useDeleteComment } from "../api"
 import { Post } from "../../post/model"
 
 export const Comments = ({
@@ -44,7 +44,7 @@ export const Comments = ({
               <span className="truncate">{highlightText(comment.body, searchQuery)}</span>
             </div>
             <div className="flex items-center space-x-1">
-              <Button variant="ghost" size="sm" onClick={() => likeComment.mutate(comment.id, comment)}>
+              <Button variant="ghost" size="sm" onClick={() => likeComment.mutate({commentId: comment.id, likes: comment.likes})}>
                 <ThumbsUp className="w-3 h-3" />
                 <span className="ml-1 text-xs">{comment.likes}</span>
               </Button>
