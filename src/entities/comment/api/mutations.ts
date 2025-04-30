@@ -25,12 +25,11 @@ export const useAddComment = (postId: Post["id"]) => {
 
 export const useUpdateComment = (postId: Post["id"]) => {
   return useMutation<string, Error, Comment>({
-    mutationFn: (selectedComment: Comment) =>
-      fetcher<string>({
-        url: `/comments/${selectedComment.id}`,
-        method: "PUT",
-        data: selectedComment.body,
-      }),
+    mutationFn: (selectedComment: Comment) => fetcher<string>({
+      url: `/comments/${selectedComment.id}`,
+      method: "PUT",
+      data: {body: selectedComment.body},
+    }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: commentKeys.list(postId) })
     },

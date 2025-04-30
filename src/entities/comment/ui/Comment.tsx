@@ -17,7 +17,7 @@ export const Comments = ({
   const { data, isLoading, error } = useComments(postId)
   const likeComment = useLikeComment(postId)
   const deleteComment = useDeleteComment(postId)
-  
+
   if (isLoading) return <h1>Loading...</h1>
   if (error) return <h1>Error!</h1>
 
@@ -128,7 +128,6 @@ interface UpdateCommentDialogProps {
       userId?: number | undefined
     } | null>
   >
-  updateComment: () => void
 }
 
 export const UpdateCommentDialog = ({
