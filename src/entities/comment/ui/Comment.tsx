@@ -1,25 +1,27 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, Textarea, Button } from "../../../shared/ui"
 import { Edit2, Plus, ThumbsUp, Trash2 } from "lucide-react"
-import { CommentAddDTO, Comment } from "../model/types"
 import { useComments } from "../api/queries"
 import { useAddComment, useUpdateComment, useLikeComment, useDeleteComment } from "../api"
-import { Post } from "../../post/model/types"
+import { useCommentStore } from "../model/store"
+import { usePostStore } from "../../post/model/store"
 
-export const Comments = ({
-  postId,
-  setNewComment,
-  setShowAddCommentDialog,
-  setSelectedComment,
-  setShowEditCommentDialog,
-  highlightText,
-  searchQuery,
-}) => {
+export const Comments = ({ postId, highlightText, searchQuery }) => {
+  const setSelectedComment = useCommentStore((state) => state.setSelectedComment)
+  const setNewComment = useCommentStore((state) => state.setNewComment)
+  const setShowAddCommentDialog = useCommentStore((state) => state.setShowAddCommentDialog)
+  const setShowEditCommentDialog = useCommentStore((state) => state.setShowEditCommentDialog)
+
   const { data, isLoading, error } = useComments(postId)
   const likeComment = useLikeComment(postId)
   const deleteComment = useDeleteComment(postId)
 
   if (isLoading) return <h1>Loading...</h1>
-  if (error) return <h1>Error!</h1>
+  if (error) {
+    if (error.status === 404) {
+      return <h1>댓글 기능을 사용할 수 없습니다.</h1>
+    }
+    return <h1>Error!</h1>
+  }
 
   return (
     <div className="mt-2">
@@ -73,28 +75,13 @@ export const Comments = ({
   )
 }
 
-interface AddCommentDialogProps {
-  postId: Post["id"]
-  showAddCommentDialog: boolean
-  setShowAddCommentDialog: (show: boolean) => void
-  newComment: CommentAddDTO
-  setNewComment: React.Dispatch<
-    React.SetStateAction<{
-      body: string
-      postId: number | null
-      userId: number
-    }>
-  >
-}
-
-export const AddCommentDialog = ({
-  postId,
-  showAddCommentDialog,
-  setShowAddCommentDialog,
-  newComment,
-  setNewComment,
-}: AddCommentDialogProps) => {
-  const addComment = useAddComment(postId)
+export const AddCommentDialog = () => {
+  const selectedPost = usePostStore((state) => state.selectedPost)
+  const addComment = useAddComment(selectedPost?.id)
+  const newComment = useCommentStore((state) => state.newComment)
+  const setNewComment = useCommentStore((state) => state.setNewComment)
+  const showAddCommentDialog = useCommentStore((state) => state.showAddCommentDialog)
+  const setShowAddCommentDialog = useCommentStore((state) => state.setShowAddCommentDialog)
 
   const handleAddComment = () => {
     addComment.mutate(newComment)
@@ -120,28 +107,13 @@ export const AddCommentDialog = ({
   )
 }
 
-interface UpdateCommentDialogProps {
-  postId: Post["id"]
-  showEditCommentDialog: boolean
-  setShowEditCommentDialog: React.Dispatch<React.SetStateAction<boolean>>
-  selectedComment: Comment | null
-  setSelectedComment: React.Dispatch<
-    React.SetStateAction<{
-      body: string | any
-      postId?: number | null | undefined
-      userId?: number | undefined
-    } | null>
-  >
-}
-
-export const UpdateCommentDialog = ({
-  postId,
-  showEditCommentDialog,
-  setShowEditCommentDialog,
-  selectedComment,
-  setSelectedComment,
-}: UpdateCommentDialogProps) => {
-  const updateComment = useUpdateComment(postId)
+export const UpdateCommentDialog = () => {
+  const selectedPost = usePostStore((state) => state.selectedPost)
+  const updateComment = useUpdateComment(selectedPost?.id)
+  const selectedComment = useCommentStore((state) => state.selectedComment)
+  const setSelectedComment = useCommentStore((state) => state.setSelectedComment)
+  const showEditCommentDialog = useCommentStore((state) => state.showEditCommentDialog)
+  const setShowEditCommentDialog = useCommentStore((state) => state.setShowEditCommentDialog)
 
   const handleUpdateComment = () => {
     if (selectedComment === null) return

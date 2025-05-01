@@ -13,10 +13,12 @@ export const commentKeys = {
 export const useComments = (postId: Post["id"]) => {
   return useQuery({
     queryKey: commentKeys.list(postId),
-    queryFn: () =>
-      fetcher({
+    queryFn: async () => {
+      const comments = await fetcher({
         url: `/comments/post/${postId}`,
         method: "GET",
-      }),
+      })
+      return comments
+    },
   })
 }

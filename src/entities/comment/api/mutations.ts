@@ -25,22 +25,19 @@ export const useAddComment = (postId: Post["id"]) => {
         }
       })
     },
-    onError: (error: Error, variables: CommentAddDTO, context: unknown) => {
-      console.error("댓글 추가 오류:", error)
-    },
   })
 }
 
 export const useUpdateComment = (postId: Post["id"]) => {
   const queryClient = useQueryClient()
-  return useMutation<string, Error, Comment>({
-    mutationFn: (selectedComment: Comment) =>
+  return useMutation<string, Error, CommentAddDTO>({
+    mutationFn: (selectedComment: CommentAddDTO) =>
       fetcher<string>({
         url: `/comments/${selectedComment.id}`,
         method: "PUT",
         data: { body: selectedComment.body },
       }),
-    onSuccess: (data: string, variables: Comment, context: unknown) => {
+    onSuccess: (data: string, variables: CommentAddDTO, context: unknown) => {
       queryClient.setQueriesData({ queryKey: commentKeys.list(postId) }, (prev: PostComments) => {
         return {
           ...prev,
@@ -51,7 +48,7 @@ export const useUpdateComment = (postId: Post["id"]) => {
         }
       })
     },
-    onError: (error: Error, variables: Comment, context: unknown) => {
+    onError: (error: Error, variables: CommentAddDTO, context: unknown) => {
       if (error.status !== 404) {
         console.error("댓글 업데이트 오류:", error)
       }

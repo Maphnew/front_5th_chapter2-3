@@ -1,25 +1,28 @@
 import { Button, Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../shared/ui"
 import { Edit2, MessageSquare, ThumbsDown, ThumbsUp, Trash2 } from "lucide-react"
-import { usePosts } from "../api"
+import { useDeletePost, usePostsQuery } from "../api"
+import { usePostStore } from "../model/store"
+import { usePaginationStore } from "../../../features/pagination/model/store"
+import { Post } from "../model/types"
 
-export const PostTable = ({
-  skip,
-  limit,
-  highlightText,
-  searchQuery,
-  selectedTag,
-  setSelectedTag,
-  updateURL,
-  openUserModal,
-  openPostDetail,
-  setSelectedPost,
-  setShowEditDialog,
-  deletePost,
-}) => {
-  const { data, isLoading, error } = usePosts(limit, skip)
+export const PostTable = ({ highlightText, updateURL, openUserModal, openPostDetail }) => {
+  const limit = usePaginationStore((state) => state.limit)
+  const skip = usePaginationStore((state) => state.skip)
+  const searchQuery = usePaginationStore((state) => state.searchQuery)
+  const selectedTag = usePostStore((state) => state.selectedTag)
+  const setSelectedTag = usePostStore((state) => state.setSelectedTag)
+  const setSelectedPost = usePostStore((state) => state.setSelectedPost)
+  const setShowEditDialog = usePostStore((state) => state.setShowEditDialog)
+
+  const { posts, isLoading, error } = usePostsQuery(limit, skip, selectedTag, searchQuery)
+  const deletePost = useDeletePost()
 
   if (isLoading) return <h1>Loading...</h1>
   if (error) return <h1>Error!</h1>
+
+  const handleDeletePost = (postId: Post["id"]) => {
+    deletePost.mutate(postId)
+  }
 
   return (
     <Table>
@@ -33,7 +36,7 @@ export const PostTable = ({
         </TableRow>
       </TableHeader>
       <TableBody>
-        {data.map((post) => (
+        {posts.map((post) => (
           <TableRow key={post.id}>
             <TableCell>{post.id}</TableCell>
             <TableCell>
@@ -89,7 +92,7 @@ export const PostTable = ({
                 >
                   <Edit2 className="w-4 h-4" />
                 </Button>
-                <Button variant="ghost" size="sm" onClick={() => deletePost(post.id)}>
+                <Button variant="ghost" size="sm" onClick={() => handleDeletePost(post.id)}>
                   <Trash2 className="w-4 h-4" />
                 </Button>
               </div>

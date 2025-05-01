@@ -1,7 +1,7 @@
 export type Comment = {
   id: number
   body: string
-  postId: number
+  postId: number | null
   likes?: number
   isDeleted?: boolean
   user: {
@@ -13,8 +13,9 @@ export type Comment = {
 
 export type CommentAddDTO = {
   body: string
-  postId: number | null
-  userId: number
+  postId?: number | null | undefined
+  userId?: number | undefined
+  id?: number
 }
 
 export interface LikeCommentProps {

@@ -1,14 +1,21 @@
 export type Post = {
-  id: number
-  title: string
-  body: string
+  id?: number
+  title?: string | any
+  body?: string | undefined | any
   tags?: string[]
   reactions?: {
     likes: number
     dislikes: number
   }
   views?: number
-  userId: number
+  userId?: number | undefined
+}
+
+export type Posts = {
+  posts: Post[]
+  limit: number
+  skip: number
+  total: number
 }
 
 export interface PostComments {

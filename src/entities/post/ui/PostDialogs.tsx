@@ -1,8 +1,15 @@
 import { Button, Dialog, DialogContent, DialogHeader, DialogTitle, Input, Textarea } from "../../../shared/ui"
-import { useAddPost } from "../api"
+import { useAddPost, useUpdatePost } from "../api"
+import { usePostStore } from "../model/store"
+import { Comments } from "../../comment/ui/Comment"
+import { usePaginationStore } from "../../../features/pagination/model/store"
 
-export const AddPostDialog = ({ showAddDialog, setShowAddDialog, newPost, setNewPost }) => {
+export const AddPostDialog = () => {
   const addPost = useAddPost()
+  const showAddDialog = usePostStore((state) => state.showAddDialog)
+  const setShowAddDialog = usePostStore((state) => state.setShowAddDialog)
+  const newPost = usePostStore((state) => state.newPost)
+  const setNewPost = usePostStore((state) => state.setNewPost)
 
   const handleAddPost = () => {
     addPost.mutate(newPost)
@@ -40,7 +47,18 @@ export const AddPostDialog = ({ showAddDialog, setShowAddDialog, newPost, setNew
   )
 }
 
-export const UpdatePostDialog = ({ showEditDialog, setShowEditDialog, selectedPost, setSelectedPost, updatePost }) => {
+export const UpdatePostDialog = () => {
+  const selectedPost = usePostStore((state) => state.selectedPost)
+  const setSelectedPost = usePostStore((state) => state.setSelectedPost)
+  const showEditDialog = usePostStore((state) => state.showEditDialog)
+  const setShowEditDialog = usePostStore((state) => state.setShowEditDialog)
+  const updatePost = useUpdatePost()
+
+  const handleUpdatePost = () => {
+    updatePost.mutate()
+    setShowEditDialog(false)
+  }
+
   return (
     <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
       <DialogContent>
@@ -59,7 +77,27 @@ export const UpdatePostDialog = ({ showEditDialog, setShowEditDialog, selectedPo
             value={selectedPost?.body || ""}
             onChange={(e) => setSelectedPost({ ...selectedPost, body: e.target.value })}
           />
-          <Button onClick={updatePost}>게시물 업데이트</Button>
+          <Button onClick={handleUpdatePost}>게시물 업데이트</Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  )
+}
+
+export const DetailPostDialog = ({ highlightText }) => {
+  const searchQuery = usePaginationStore((state) => state.searchQuery)
+  const selectedPost = usePostStore((state) => state.selectedPost)
+  const showPostDetailDialog = usePostStore((state) => state.showPostDetailDialog)
+  const setShowPostDetailDialog = usePostStore((state) => state.setShowPostDetailDialog)
+  return (
+    <Dialog open={showPostDetailDialog} onOpenChange={setShowPostDetailDialog}>
+      <DialogContent className="max-w-3xl">
+        <DialogHeader>
+          <DialogTitle>{highlightText(selectedPost?.title, searchQuery)}</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-4">
+          <p>{highlightText(selectedPost?.body, searchQuery)}</p>
+          <Comments postId={selectedPost?.id} highlightText={highlightText} searchQuery={searchQuery} />
         </div>
       </DialogContent>
     </Dialog>
