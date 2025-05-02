@@ -36,7 +36,7 @@ export const usePostsQuery = () => {
     queryKey: postKeys.tag(selectedTag),
     queryFn: () =>
       fetcher<Posts>({
-        url: `posts/tag/${selectedTag}`,
+        url: selectedTag ? `posts/tag/${selectedTag}` : "posts/tags",
         method: "GET",
       }),
   })

@@ -14,7 +14,7 @@ export const AddPostDialog = () => {
   const handleAddPost = () => {
     addPost.mutate()
     setShowAddDialog(false)
-    setNewPost({ title: "", body: "", userId: 1 })
+    setNewPost(newPost)
   }
   return (
     <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>

@@ -3,6 +3,7 @@ import { Search } from "lucide-react"
 import { usePaginationStore } from "../../../features/pagination/model/store"
 import { usePostsQuery } from "../api"
 import { usePostStore } from "../model/store"
+import { useTags } from "../../tag/api/queries"
 
 export const PostSearch = ({ updateURL }: { updateURL: () => void }) => {
   const searchQuery = usePaginationStore((state) => state.searchQuery)
@@ -13,7 +14,7 @@ export const PostSearch = ({ updateURL }: { updateURL: () => void }) => {
   const setSortBy = usePaginationStore((state) => state.setSortBy)
   const setSortOrder = usePaginationStore((state) => state.setSortOrder)
 
-  const tags = usePostStore((state) => state.tags)
+  const { data: tags } = useTags()
   const selectedTag = usePostStore((state) => state.selectedTag)
   const setSelectedTag = usePostStore((state) => state.setSelectedTag)
 
@@ -47,11 +48,13 @@ export const PostSearch = ({ updateURL }: { updateURL: () => void }) => {
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="all">모든 태그</SelectItem>
-          {tags.map((tag) => (
-            <SelectItem key={tag.url} value={tag.slug}>
-              {tag.slug}
-            </SelectItem>
-          ))}
+          {typeof tags === "undefined"
+            ? ""
+            : tags.map((tag) => (
+                <SelectItem key={tag.url} value={tag.slug}>
+                  {tag.slug}
+                </SelectItem>
+              ))}
         </SelectContent>
       </Select>
       <Select value={sortBy} onValueChange={setSortBy}>

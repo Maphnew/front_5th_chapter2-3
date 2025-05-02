@@ -24,7 +24,7 @@ export const useAddPost = () => {
     onSuccess: (data: Post) => {
       queryClient.setQueriesData({ queryKey: postKeys.list(limit, skip) }, (prev: Posts) => {
         setTotal(total + 1)
-        return { ...prev, posts: [{ ...data, key: total + 1, id: total + 1 }, ...prev.posts] }
+        return { ...prev, posts: [{ ...data, key: total + 1, id: prev.posts.length + 1 }, ...prev.posts] }
       })
     },
   })

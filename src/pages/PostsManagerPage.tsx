@@ -9,7 +9,6 @@ import { usePaginationStore } from "../features/pagination/model/store"
 import { Pagination } from "../widgets/pagination/ui/Pagination"
 import { UserModal } from "../entities/user/ui/UserModal"
 import { PostSearch } from "../entities/post/ui/PostSearch"
-import { useUserStore } from "../entities/user/model/store"
 import { Post } from "../entities/post/model/types"
 
 const PostsManager = () => {
@@ -20,7 +19,6 @@ const PostsManager = () => {
 
   const setSelectedPost = usePostStore((state) => state.setSelectedPost)
   const setShowPostDetailDialog = usePostStore((state) => state.setShowPostDetailDialog)
-  const setTags = usePostStore((state) => state.setTags)
   const setSelectedTag = usePostStore((state) => state.setSelectedTag)
 
   const skip = usePaginationStore((state) => state.skip)
@@ -35,13 +33,6 @@ const PostsManager = () => {
   const setSortBy = usePaginationStore((state) => state.setSortBy)
   const setSortOrder = usePaginationStore((state) => state.setSortOrder)
 
-  const showUserModal = useUserStore((state) => state.showUserModal)
-  const selectedUser = useUserStore((state) => state.selectedUser)
-
-  const setShowUserModal = useUserStore((state) => state.setShowUserModal)
-
-  // 상태 관리
-
   // URL 업데이트 함수
   const updateURL = () => {
     const params = new URLSearchParams()
@@ -54,26 +45,11 @@ const PostsManager = () => {
     navigate(`?${params.toString()}`)
   }
 
-  // 태그 가져오기
-  const fetchTags = async () => {
-    try {
-      const response = await fetch("/api/posts/tags")
-      const data = await response.json()
-      setTags(data)
-    } catch (error) {
-      console.error("태그 가져오기 오류:", error)
-    }
-  }
-
   // 게시물 상세 보기
   const openPostDetail = (post: Post) => {
     setSelectedPost(post)
     setShowPostDetailDialog(true)
   }
-
-  useEffect(() => {
-    fetchTags()
-  }, [])
 
   useEffect(() => {
     updateURL()
@@ -126,7 +102,7 @@ const PostsManager = () => {
       <AddCommentDialog />
       <UpdateCommentDialog />
 
-      <UserModal showUserModal={showUserModal} setShowUserModal={setShowUserModal} selectedUser={selectedUser} />
+      <UserModal />
     </Card>
   )
 }
