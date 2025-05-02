@@ -1,10 +1,10 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, Textarea, Button } from "../../../shared/ui"
 import { Edit2, Plus, ThumbsUp, Trash2 } from "lucide-react"
-import { useComments } from "../api/queries"
-import { useAddComment, useUpdateComment, useLikeComment, useDeleteComment } from "../api"
-import { useCommentStore } from "../model/store"
-import { usePostStore } from "../../post/model/store"
-import { usePaginationStore } from "../../../features/pagination/model/store"
+import { useComments } from "../../../entities/comment/api/queries"
+import { useAddComment, useUpdateComment, useLikeComment, useDeleteComment } from "../../../entities/comment/api"
+import { useCommentStore } from "../../../entities/comment/model/store"
+import { usePostStore } from "../../../entities/post/model/store"
+import { usePaginationStore } from "../../pagination/model/store"
 
 export const Comments = ({ highlightText }: { highlightText: (text: string, query: string) => React.ReactNode }) => {
   const setSelectedComment = useCommentStore((state) => state.setSelectedComment)

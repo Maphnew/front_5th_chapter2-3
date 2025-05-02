@@ -1,9 +1,9 @@
 import { Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../../shared/ui"
 import { Search } from "lucide-react"
 import { usePaginationStore } from "../../../features/pagination/model/store"
-import { usePostsQuery } from "../api"
-import { usePostStore } from "../model/store"
-import { useTags } from "../../tag/api/queries"
+import { usePostsQuery } from "../../../entities/post/api"
+import { usePostStore } from "../../../entities/post/model/store"
+import { useTags } from "../../../entities/tag/api/queries"
 
 export const PostSearch = ({ updateURL }: { updateURL: () => void }) => {
   const searchQuery = usePaginationStore((state) => state.searchQuery)

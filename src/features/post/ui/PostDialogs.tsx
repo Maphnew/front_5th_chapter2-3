@@ -1,7 +1,7 @@
 import { Button, Dialog, DialogContent, DialogHeader, DialogTitle, Input, Textarea } from "../../../shared/ui"
-import { useAddPost, useUpdatePost } from "../api"
-import { usePostStore } from "../model/store"
-import { Comments } from "../../comment/ui/Comment"
+import { useAddPost, useUpdatePost } from "../../../entities/post/api"
+import { usePostStore } from "../../../entities/post/model/store"
+import { Comments } from "../../../features/comment/ui/Comment"
 import { usePaginationStore } from "../../../features/pagination/model/store"
 
 export const AddPostDialog = () => {

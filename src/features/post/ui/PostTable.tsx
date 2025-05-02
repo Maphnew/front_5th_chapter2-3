@@ -1,11 +1,11 @@
 import { Button, Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../shared/ui"
 import { Edit2, MessageSquare, ThumbsDown, ThumbsUp, Trash2 } from "lucide-react"
-import { useDeletePost, usePostsQuery } from "../api"
-import { usePostStore } from "../model/store"
+import { useDeletePost, usePostsQuery } from "../../../entities/post/api"
+import { usePostStore } from "../../../entities/post/model/store"
 import { usePaginationStore } from "../../../features/pagination/model/store"
-import { Post, PostTableProps } from "../model/types"
-import { User } from "../../user/model/types"
-import { useUserStore } from "../../user/model/store"
+import { Post, PostTableProps } from "../../../entities/post/model/types"
+import { User } from "../../../entities/user/model/types"
+import { useUserStore } from "../../../entities/user/model/store"
 
 export const PostTable = ({ highlightText, updateURL, openPostDetail }: PostTableProps) => {
   const searchQuery = usePaginationStore((state) => state.searchQuery)

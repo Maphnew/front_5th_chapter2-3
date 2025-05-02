@@ -1,14 +1,19 @@
 import { useEffect } from "react"
 import { useLocation, useNavigate } from "react-router-dom"
 import { Card, CardContent } from "../shared/ui"
-import { AddCommentDialog, UpdateCommentDialog } from "../entities/comment/ui/Comment"
-import { PostTable, PostHeader } from "../entities/post/ui"
-import { AddPostDialog, DetailPostDialog, UpdatePostDialog } from "../entities/post/ui/PostDialogs"
+import { AddCommentDialog, UpdateCommentDialog } from "../features/comment/ui/Comment"
+import {
+  PostTable,
+  PostHeader,
+  PostSearch,
+  AddPostDialog,
+  DetailPostDialog,
+  UpdatePostDialog,
+} from "../features/post/ui"
 import { usePostStore } from "../entities/post/model/store"
 import { usePaginationStore } from "../features/pagination/model/store"
 import { Pagination } from "../widgets/pagination/ui/Pagination"
 import { UserModal } from "../entities/user/ui/UserModal"
-import { PostSearch } from "../entities/post/ui/PostSearch"
 import { Post } from "../entities/post/model/types"
 
 const PostsManager = () => {
