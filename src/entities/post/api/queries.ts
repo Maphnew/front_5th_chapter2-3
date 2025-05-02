@@ -86,5 +86,6 @@ export const usePostsQuery = () => {
     isError: activeQuery.isError || usersQuery.isError,
     error: activeQuery.error || usersQuery.error,
     searchPosts: performSearch,
+    refetch: activeQuery.refetch,
   }
 }

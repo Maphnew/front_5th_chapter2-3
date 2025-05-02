@@ -18,10 +18,8 @@ export const PostSearch = ({ updateURL }: { updateURL: () => void }) => {
   const selectedTag = usePostStore((state) => state.selectedTag)
   const setSelectedTag = usePostStore((state) => state.setSelectedTag)
 
-  const handleSearchPosts = () => {
-    const { posts, isLoading, error } = usePostsQuery()
-    console.log(posts, isLoading, error)
-  }
+  const postsQuery = usePostsQuery()
+
   return (
     <div className="flex gap-4">
       <div className="flex-1">
@@ -32,7 +30,7 @@ export const PostSearch = ({ updateURL }: { updateURL: () => void }) => {
             className="pl-8"
             value={searchQuery}
             onChange={(e) => setSearchQuery((e.target as HTMLInputElement).value)}
-            onKeyPress={(e) => e.key === "Enter" && handleSearchPosts()}
+            onKeyPress={(e) => e.key === "Enter" && postsQuery.refetch()}
           />
         </div>
       </div>
