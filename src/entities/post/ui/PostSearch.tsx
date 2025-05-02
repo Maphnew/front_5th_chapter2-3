@@ -4,7 +4,7 @@ import { usePaginationStore } from "../../../features/pagination/model/store"
 import { usePostsQuery } from "../api"
 import { usePostStore } from "../model/store"
 
-export const PostSearch = ({ updateURL }) => {
+export const PostSearch = ({ updateURL }: { updateURL: () => void }) => {
   const searchQuery = usePaginationStore((state) => state.searchQuery)
   const sortBy = usePaginationStore((state) => state.sortBy)
   const sortOrder = usePaginationStore((state) => state.sortOrder)
@@ -13,14 +13,12 @@ export const PostSearch = ({ updateURL }) => {
   const setSortBy = usePaginationStore((state) => state.setSortBy)
   const setSortOrder = usePaginationStore((state) => state.setSortOrder)
 
-  const limit = usePaginationStore((state) => state.limit)
-  const skip = usePaginationStore((state) => state.skip)
   const tags = usePostStore((state) => state.tags)
   const selectedTag = usePostStore((state) => state.selectedTag)
   const setSelectedTag = usePostStore((state) => state.setSelectedTag)
 
   const handleSearchPosts = () => {
-    const { posts, isLoading, error } = usePostsQuery(limit, skip, selectedTag, searchQuery)
+    const { posts, isLoading, error } = usePostsQuery()
     console.log(posts, isLoading, error)
   }
   return (
@@ -32,7 +30,7 @@ export const PostSearch = ({ updateURL }) => {
             placeholder="게시물 검색..."
             className="pl-8"
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={(e) => setSearchQuery((e.target as HTMLInputElement).value)}
             onKeyPress={(e) => e.key === "Enter" && handleSearchPosts()}
           />
         </div>

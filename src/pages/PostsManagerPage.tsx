@@ -1,8 +1,6 @@
-import { useEffect, useState } from "react"
-import { Search } from "lucide-react"
+import { useEffect } from "react"
 import { useLocation, useNavigate } from "react-router-dom"
-import { Card, CardContent, Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../shared/ui"
-import { fetchPostsWithPagination } from "../entities/post/api"
+import { Card, CardContent } from "../shared/ui"
 import { AddCommentDialog, UpdateCommentDialog } from "../entities/comment/ui/Comment"
 import { PostTable, PostHeader } from "../entities/post/ui"
 import { AddPostDialog, DetailPostDialog, UpdatePostDialog } from "../entities/post/ui/PostDialogs"
@@ -12,15 +10,14 @@ import { Pagination } from "../widgets/pagination/ui/Pagination"
 import { UserModal } from "../entities/user/ui/UserModal"
 import { PostSearch } from "../entities/post/ui/PostSearch"
 import { useUserStore } from "../entities/user/model/store"
+import { Post } from "../entities/post/model/types"
 
 const PostsManager = () => {
   const navigate = useNavigate()
   const location = useLocation()
 
-  const tags = usePostStore((state) => state.tags)
   const selectedTag = usePostStore((state) => state.selectedTag)
 
-  const setTotal = usePostStore((state) => state.setTotal)
   const setSelectedPost = usePostStore((state) => state.setSelectedPost)
   const setShowPostDetailDialog = usePostStore((state) => state.setShowPostDetailDialog)
   const setTags = usePostStore((state) => state.setTags)
@@ -42,12 +39,8 @@ const PostsManager = () => {
   const selectedUser = useUserStore((state) => state.selectedUser)
 
   const setShowUserModal = useUserStore((state) => state.setShowUserModal)
-  const setSelectedUser = useUserStore((state) => state.setSelectedUser)
 
   // 상태 관리
-  const [posts, setPosts] = useState([]) // server state
-
-  const [loading, setLoading] = useState(false) // server state
 
   // URL 업데이트 함수
   const updateURL = () => {
@@ -61,33 +54,6 @@ const PostsManager = () => {
     navigate(`?${params.toString()}`)
   }
 
-  // 게시물 가져오기
-  const fetchPosts = async () => {
-    setLoading(true)
-
-    let usersData
-
-    const postsData = await fetchPostsWithPagination(limit, skip)
-
-    fetch("/api/users?limit=0&select=username,image")
-      .then((response) => response.json())
-      .then((users) => {
-        usersData = users.users
-        const postsWithUsers = postsData.posts.map((post) => ({
-          ...post,
-          author: usersData.find((user) => user.id === post.userId),
-        }))
-        setPosts(postsWithUsers)
-        setTotal(postsData.total)
-      })
-      .catch((error) => {
-        console.error("게시물 가져오기 오류:", error)
-      })
-      .finally(() => {
-        setLoading(false)
-      })
-  }
-
   // 태그 가져오기
   const fetchTags = async () => {
     try {
@@ -99,62 +65,10 @@ const PostsManager = () => {
     }
   }
 
-  // 태그별 게시물 가져오기
-  const fetchPostsByTag = async (tag) => {
-    if (!tag || tag === "all") {
-      fetchPosts()
-      return
-    }
-    setLoading(true)
-    try {
-      const [postsResponse, usersResponse] = await Promise.all([
-        fetch(`/api/posts/tag/${tag}`),
-        fetch("/api/users?limit=0&select=username,image"),
-      ])
-      const postsData = await postsResponse.json()
-      const usersData = await usersResponse.json()
-
-      const postsWithUsers = postsData.posts.map((post) => ({
-        ...post,
-        author: usersData.users.find((user) => user.id === post.userId),
-      }))
-
-      setPosts(postsWithUsers)
-      setTotal(postsData.total)
-    } catch (error) {
-      console.error("태그별 게시물 가져오기 오류:", error)
-    }
-    setLoading(false)
-  }
-
-  // 게시물 삭제
-  const deletePost = async (id) => {
-    try {
-      await fetch(`/api/posts/${id}`, {
-        method: "DELETE",
-      })
-      setPosts(posts.filter((post) => post.id !== id))
-    } catch (error) {
-      console.error("게시물 삭제 오류:", error)
-    }
-  }
-
   // 게시물 상세 보기
-  const openPostDetail = (post) => {
+  const openPostDetail = (post: Post) => {
     setSelectedPost(post)
     setShowPostDetailDialog(true)
-  }
-
-  // 사용자 모달 열기
-  const openUserModal = async (user) => {
-    try {
-      const response = await fetch(`/api/users/${user.id}`)
-      const userData = await response.json()
-      setSelectedUser(userData)
-      setShowUserModal(true)
-    } catch (error) {
-      console.error("사용자 정보 가져오기 오류:", error)
-    }
   }
 
   useEffect(() => {
@@ -162,11 +76,6 @@ const PostsManager = () => {
   }, [])
 
   useEffect(() => {
-    if (selectedTag) {
-      fetchPostsByTag(selectedTag)
-    } else {
-      fetchPosts()
-    }
     updateURL()
   }, [skip, limit, sortBy, sortOrder, selectedTag])
 
@@ -176,12 +85,12 @@ const PostsManager = () => {
     setLimit(parseInt(params.get("limit") || "10"))
     setSearchQuery(params.get("search") || "")
     setSortBy(params.get("sortBy") || "")
-    setSortOrder(params.get("sortOrder") || "asc")
+    setSortOrder((params.get("sortOrder") || "asc") as "asc" | "desc")
     setSelectedTag(params.get("tag") || "")
   }, [location.search])
 
   // 하이라이트 함수 추가
-  const highlightText = (text: string, highlight: string) => {
+  const highlightText: (text: string, query: string) => React.ReactNode = (text: string, highlight: string) => {
     if (!text) return null
     if (!highlight.trim()) {
       return <span>{text}</span>
@@ -204,16 +113,7 @@ const PostsManager = () => {
           <PostSearch updateURL={updateURL} />
 
           {/* 게시물 테이블 */}
-          {loading ? (
-            <div className="flex justify-center p-4">로딩 중...</div>
-          ) : (
-            <PostTable
-              highlightText={highlightText}
-              updateURL={updateURL}
-              openUserModal={openUserModal}
-              openPostDetail={openPostDetail}
-            />
-          )}
+          <PostTable highlightText={highlightText} updateURL={updateURL} openPostDetail={openPostDetail} />
 
           <Pagination />
         </div>

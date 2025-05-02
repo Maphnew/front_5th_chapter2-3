@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query"
 import { fetcher } from "../../../shared/api/baseQueries"
-import { Post } from "../../post/model/types"
+import { Post, PostComments } from "../../post/model/types"
 
 export const commentKeys = {
   all: ["comments"] as const,
@@ -11,10 +11,10 @@ export const commentKeys = {
 }
 
 export const useComments = (postId: Post["id"]) => {
-  return useQuery({
+  return useQuery<PostComments>({
     queryKey: commentKeys.list(postId),
     queryFn: async () => {
-      const comments = await fetcher({
+      const comments = await fetcher<PostComments>({
         url: `/comments/post/${postId}`,
         method: "GET",
       })

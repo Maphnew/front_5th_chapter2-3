@@ -4,22 +4,23 @@ import { useComments } from "../api/queries"
 import { useAddComment, useUpdateComment, useLikeComment, useDeleteComment } from "../api"
 import { useCommentStore } from "../model/store"
 import { usePostStore } from "../../post/model/store"
+import { usePaginationStore } from "../../../features/pagination/model/store"
 
-export const Comments = ({ postId, highlightText, searchQuery }) => {
+export const Comments = ({ highlightText }: { highlightText: (text: string, query: string) => React.ReactNode }) => {
   const setSelectedComment = useCommentStore((state) => state.setSelectedComment)
   const setNewComment = useCommentStore((state) => state.setNewComment)
   const setShowAddCommentDialog = useCommentStore((state) => state.setShowAddCommentDialog)
   const setShowEditCommentDialog = useCommentStore((state) => state.setShowEditCommentDialog)
 
-  const { data, isLoading, error } = useComments(postId)
-  const likeComment = useLikeComment(postId)
-  const deleteComment = useDeleteComment(postId)
+  const searchQuery = usePaginationStore((state) => state.searchQuery)
+  const selectedPost = usePostStore((state) => state.selectedPost)
 
-  if (isLoading) return <h1>Loading...</h1>
+  const { data, isLoading, error } = useComments(selectedPost?.id)
+  const likeComment = useLikeComment(selectedPost?.id)
+  const deleteComment = useDeleteComment(selectedPost?.id)
+
+  if (isLoading || typeof data === "undefined") return <h1>Loading...</h1>
   if (error) {
-    if (error.status === 404) {
-      return <h1>댓글 기능을 사용할 수 없습니다.</h1>
-    }
     return <h1>Error!</h1>
   }
 
@@ -30,7 +31,7 @@ export const Comments = ({ postId, highlightText, searchQuery }) => {
         <Button
           size="sm"
           onClick={() => {
-            setNewComment((prev) => ({ ...prev, postId }))
+            setNewComment((prev) => ({ ...prev, postId: selectedPost?.id }))
             setShowAddCommentDialog(true)
           }}
         >
@@ -98,7 +99,7 @@ export const AddCommentDialog = () => {
           <Textarea
             placeholder="댓글 내용"
             value={newComment.body}
-            onChange={(e) => setNewComment({ ...newComment, body: e.target.value })}
+            onChange={(e) => setNewComment({ ...newComment, body: (e.target as HTMLTextAreaElement).value })}
           />
           <Button onClick={handleAddComment}>댓글 추가</Button>
         </div>
@@ -130,7 +131,7 @@ export const UpdateCommentDialog = () => {
           <Textarea
             placeholder="댓글 내용"
             value={selectedComment?.body || ""}
-            onChange={(e) => setSelectedComment({ ...selectedComment, body: e.target.value })}
+            onChange={(e) => setSelectedComment({ ...selectedComment, body: (e.target as HTMLTextAreaElement).value })}
           />
           <Button onClick={handleUpdateComment}>댓글 업데이트</Button>
         </div>

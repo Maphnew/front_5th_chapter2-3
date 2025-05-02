@@ -37,21 +37,18 @@ export const useUpdateComment = (postId: Post["id"]) => {
         method: "PUT",
         data: { body: selectedComment.body },
       }),
-    onSuccess: (data: string, variables: CommentAddDTO, context: unknown) => {
+    onSuccess: (data: string | Comment, variables: CommentAddDTO) => {
       queryClient.setQueriesData({ queryKey: commentKeys.list(postId) }, (prev: PostComments) => {
         return {
           ...prev,
           comments: prev.comments.map((comment) => {
-            if (comment.id === variables.id) return variables
+            if (comment.id === variables.id) return data
             return comment
           }),
         }
       })
     },
-    onError: (error: Error, variables: CommentAddDTO, context: unknown) => {
-      if (error.status !== 404) {
-        console.error("댓글 업데이트 오류:", error)
-      }
+    onError: (error: Error, variables: CommentAddDTO) => {
       queryClient.setQueriesData({ queryKey: commentKeys.list(postId) }, (prev: PostComments) => {
         return {
           ...prev,
@@ -70,12 +67,12 @@ export const useLikeComment = (postId: Post["id"]) => {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: ({ commentId, likes }: LikeCommentProps) =>
-      fetcher<string>({
+      fetcher<LikeCommentProps>({
         url: `/comments/${commentId}`,
         method: "PATCH",
-        data: { likes: likes + 1 },
+        data: { likes: likes ? likes + 1 : 1 },
       }),
-    onSuccess: (data: string, variables: LikeCommentProps, context: unknown) => {
+    onSuccess: (variables: LikeCommentProps) => {
       queryClient.setQueriesData({ queryKey: commentKeys.list(postId) }, (prev: PostComments) => {
         return {
           ...prev,
@@ -86,10 +83,7 @@ export const useLikeComment = (postId: Post["id"]) => {
         }
       })
     },
-    onError: (error: Error, variables: LikeCommentProps, context: unknown) => {
-      if (error.status !== 404) {
-        console.error("댓글 좋아요 오류:" + error)
-      }
+    onError: (error: Error, variables: LikeCommentProps) => {
       queryClient.setQueriesData({ queryKey: commentKeys.list(postId) }, (prev: PostComments) => {
         return {
           ...prev,
@@ -106,13 +100,13 @@ export const useLikeComment = (postId: Post["id"]) => {
 
 export const useDeleteComment = (postId: Post["id"]) => {
   const queryClient = useQueryClient()
-  return useMutation({
-    mutationFn: (commentId) =>
-      fetcher({
+  return useMutation<Comment, Error, number>({
+    mutationFn: (commentId: number) =>
+      fetcher<Comment>({
         url: `/comments/${commentId}`,
         method: "DELETE",
       }),
-    onSuccess: (data: Comment, variables: void, context: unknown) => {
+    onSuccess: (data: Comment) => {
       queryClient.setQueriesData({ queryKey: commentKeys.list(postId) }, (prev: PostComments) => {
         return {
           ...prev,
@@ -123,10 +117,7 @@ export const useDeleteComment = (postId: Post["id"]) => {
         }
       })
     },
-    onError: (error: Error, variables: number | void, context: unknown) => {
-      if (error.status !== 404) {
-        console.error("댓글 삭제 오류:", error)
-      }
+    onError: (error: Error, variables: number | void) => {
       queryClient.setQueriesData({ queryKey: commentKeys.list(postId) }, (prev: PostComments) => {
         return {
           ...prev,

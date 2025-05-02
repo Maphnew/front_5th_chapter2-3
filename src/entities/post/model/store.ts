@@ -1,5 +1,6 @@
 import { create } from "zustand"
 import { Post } from "./types"
+import { Tag } from "./types"
 
 // 상태 인터페이스 정의
 interface PostState {
@@ -9,7 +10,7 @@ interface PostState {
   showEditDialog: boolean
   newPost: Post
   showPostDetailDialog: boolean
-  tags: string[]
+  tags: Tag[]
   selectedTag: string
 }
 
@@ -21,7 +22,7 @@ interface PostActions {
   setShowEditDialog: (show: boolean) => void
   setNewPost: (post: Post) => void
   setShowPostDetailDialog: (show: boolean) => void
-  setTags: (tags: string[]) => void
+  setTags: (tags: Tag[]) => void
   setSelectedTag: (selectedTag: string) => void
 }
 
@@ -56,6 +57,6 @@ export const usePostStore = create<PostStore>((set) => ({
   setShowEditDialog: (show: boolean) => set((state) => ({ ...state, showEditDialog: show })),
   setNewPost: (post: Post) => set((state) => ({ ...state, newPost: post })),
   setShowPostDetailDialog: (show: boolean) => set((state) => ({ ...state, showPostDetailDialog: show })),
-  setTags: (tags: string[]) => set((state) => ({ ...state, tags: tags })),
+  setTags: (tags: Tag[]) => set((state) => ({ ...state, tags: tags })),
   setSelectedTag: (selectedTag: string) => set((state) => ({ ...state, selectedTag: selectedTag })),
 }))

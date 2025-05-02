@@ -17,7 +17,12 @@ export const postKeys = {
   tag: (tag: string) => [...postKeys.tags(), tag] as const,
 }
 
-export const usePostsQuery = (limit, skip, selectedTag, searchQuery) => {
+export const usePostsQuery = () => {
+  const limit = usePaginationStore((state) => state.limit)
+  const skip = usePaginationStore((state) => state.skip)
+  const selectedTag = usePostStore((state) => state.selectedTag)
+  const searchQuery = usePaginationStore((state) => state.searchQuery)
+
   const postsQuery = useQuery({
     queryKey: postKeys.list(limit, skip),
     queryFn: () =>

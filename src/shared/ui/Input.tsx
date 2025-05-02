@@ -1,8 +1,10 @@
 import { forwardRef, HTMLInputTypeAttribute } from "react"
 
 interface InputProps extends React.HTMLAttributes<HTMLInputElement> {
+  placeholder?: string
   className?: string
-  type: HTMLInputTypeAttribute
+  type?: HTMLInputTypeAttribute
+  value?: string | number
 }
 
 // 입력 컴포넌트

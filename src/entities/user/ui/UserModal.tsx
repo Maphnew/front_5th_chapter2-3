@@ -1,6 +1,13 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../../../shared/ui"
+import { User } from "../model/types"
 
-export const UserModal = ({ showUserModal, setShowUserModal, selectedUser }) => {
+interface UserModalProps {
+  showUserModal: boolean
+  setShowUserModal: (show: boolean) => void
+  selectedUser: User | null
+}
+
+export const UserModal = ({ showUserModal, setShowUserModal, selectedUser }: UserModalProps) => {
   return (
     <Dialog open={showUserModal} onOpenChange={setShowUserModal}>
       <DialogContent>

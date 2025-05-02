@@ -11,16 +11,17 @@ export const useAddPost = () => {
 
   const limit = usePaginationStore((state) => state.limit)
   const skip = usePaginationStore((state) => state.skip)
+  const newPost = usePostStore((state) => state.newPost)
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: (newPost) =>
+    mutationFn: () =>
       fetcher({
         url: "/posts/add",
         method: "POST",
         data: newPost,
-      }),
-    onSuccess: (data: Post, variables: void, context: unknown) => {
+      }) as Promise<Post>,
+    onSuccess: (data: Post) => {
       queryClient.setQueriesData({ queryKey: postKeys.list(limit, skip) }, (prev: Posts) => {
         setTotal(total + 1)
         return { ...prev, posts: [{ ...data, key: total + 1, id: total + 1 }, ...prev.posts] }
@@ -38,11 +39,11 @@ export const useUpdatePost = () => {
   return useMutation({
     mutationFn: () =>
       fetcher<Post>({
-        url: `/posts/${selectedPost.id}`,
+        url: `/posts/${selectedPost ? selectedPost.id : 0}`,
         method: "PUT",
         data: selectedPost,
       }),
-    onSuccess: (data: Post, variables: void, context: unknown) => {
+    onSuccess: (data: Post) => {
       queryClient.setQueriesData({ queryKey: postKeys.list(limit, skip) }, (prev: Posts) => {
         console.log(prev, data)
         const posts = prev.posts.map((post) =>
@@ -65,7 +66,7 @@ export const useDeletePost = () => {
         url: `/posts/${postId}`,
         method: "DELETE",
       }),
-    onSuccess: (data: Post, variables: number | undefined, context: unknown) => {
+    onSuccess: (data: Post) => {
       queryClient.setQueriesData({ queryKey: postKeys.list(limit, skip) }, (prev: Posts) => {
         return { ...prev, posts: prev.posts.filter((post) => post.id !== data.id) }
       })

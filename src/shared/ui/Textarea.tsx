@@ -2,6 +2,9 @@ import { forwardRef, HTMLAttributes } from "react"
 
 interface TextareaProps extends HTMLAttributes<HTMLTextAreaElement> {
   className?: string
+  rows?: number
+  placeholder?: string
+  value?: string
 }
 
 // 텍스트 영역 컴포넌트

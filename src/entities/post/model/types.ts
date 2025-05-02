@@ -1,3 +1,11 @@
+import { User } from "../../user/model/types"
+
+export type Tag = {
+  slug: string
+  name: string
+  url: string
+}
+
 export type Post = {
   id?: number
   title?: string | any
@@ -33,8 +41,8 @@ export interface Comment {
   user: User
 }
 
-export interface User {
-  id: number
-  username: string
-  fullName: string
+export interface PostTableProps {
+  highlightText: (text: string, query: string) => React.ReactNode
+  updateURL: () => void
+  openPostDetail: (post: Post) => void
 }

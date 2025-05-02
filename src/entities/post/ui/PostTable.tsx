@@ -3,21 +3,37 @@ import { Edit2, MessageSquare, ThumbsDown, ThumbsUp, Trash2 } from "lucide-react
 import { useDeletePost, usePostsQuery } from "../api"
 import { usePostStore } from "../model/store"
 import { usePaginationStore } from "../../../features/pagination/model/store"
-import { Post } from "../model/types"
+import { Post, PostTableProps } from "../model/types"
+import { User } from "../../user/model/types"
+import { useUserStore } from "../../user/model/store"
 
-export const PostTable = ({ highlightText, updateURL, openUserModal, openPostDetail }) => {
-  const limit = usePaginationStore((state) => state.limit)
-  const skip = usePaginationStore((state) => state.skip)
+export const PostTable = ({ highlightText, updateURL, openPostDetail }: PostTableProps) => {
   const searchQuery = usePaginationStore((state) => state.searchQuery)
   const selectedTag = usePostStore((state) => state.selectedTag)
   const setSelectedTag = usePostStore((state) => state.setSelectedTag)
   const setSelectedPost = usePostStore((state) => state.setSelectedPost)
   const setShowEditDialog = usePostStore((state) => state.setShowEditDialog)
 
-  const { posts, isLoading, error } = usePostsQuery(limit, skip, selectedTag, searchQuery)
+  const setShowUserModal = useUserStore((state) => state.setShowUserModal)
+  const setSelectedUser = useUserStore((state) => state.setSelectedUser)
+
+  const { posts, isLoading, error } = usePostsQuery()
   const deletePost = useDeletePost()
 
-  if (isLoading) return <h1>Loading...</h1>
+  // 사용자 모달 열기
+  const openUserModal = async (user: User | undefined) => {
+    if (typeof user === "undefined") return
+    try {
+      const response = await fetch(`/api/users/${user.id}`)
+      const userData = await response.json()
+      setSelectedUser(userData)
+      setShowUserModal(true)
+    } catch (error) {
+      console.error("사용자 정보 가져오기 오류:", error)
+    }
+  }
+
+  if (isLoading) return <h1>로딩 중...</h1>
   if (error) return <h1>Error!</h1>
 
   const handleDeletePost = (postId: Post["id"]) => {

@@ -12,7 +12,7 @@ export const AddPostDialog = () => {
   const setNewPost = usePostStore((state) => state.setNewPost)
 
   const handleAddPost = () => {
-    addPost.mutate(newPost)
+    addPost.mutate()
     setShowAddDialog(false)
     setNewPost({ title: "", body: "", userId: 1 })
   }
@@ -26,19 +26,19 @@ export const AddPostDialog = () => {
           <Input
             placeholder="제목"
             value={newPost.title}
-            onChange={(e) => setNewPost({ ...newPost, title: e.target.value })}
+            onChange={(e) => setNewPost({ ...newPost, title: (e.target as HTMLInputElement).value })}
           />
           <Textarea
             rows={30}
             placeholder="내용"
             value={newPost.body}
-            onChange={(e) => setNewPost({ ...newPost, body: e.target.value })}
+            onChange={(e) => setNewPost({ ...newPost, body: (e.target as HTMLTextAreaElement).value })}
           />
           <Input
             type="number"
             placeholder="사용자 ID"
             value={newPost.userId}
-            onChange={(e) => setNewPost({ ...newPost, userId: Number(e.target.value) })}
+            onChange={(e) => setNewPost({ ...newPost, userId: Number((e.target as HTMLInputElement).value) })}
           />
           <Button onClick={handleAddPost}>게시물 추가</Button>
         </div>
@@ -69,13 +69,13 @@ export const UpdatePostDialog = () => {
           <Input
             placeholder="제목"
             value={selectedPost?.title || ""}
-            onChange={(e) => setSelectedPost({ ...selectedPost, title: e.target.value })}
+            onChange={(e) => setSelectedPost({ ...selectedPost, title: (e.target as HTMLInputElement).value })}
           />
           <Textarea
             rows={15}
             placeholder="내용"
             value={selectedPost?.body || ""}
-            onChange={(e) => setSelectedPost({ ...selectedPost, body: e.target.value })}
+            onChange={(e) => setSelectedPost({ ...selectedPost, body: (e.target as HTMLInputElement).value })}
           />
           <Button onClick={handleUpdatePost}>게시물 업데이트</Button>
         </div>
@@ -84,7 +84,11 @@ export const UpdatePostDialog = () => {
   )
 }
 
-export const DetailPostDialog = ({ highlightText }) => {
+export const DetailPostDialog = ({
+  highlightText,
+}: {
+  highlightText: (text: string, query: string) => React.ReactNode
+}) => {
   const searchQuery = usePaginationStore((state) => state.searchQuery)
   const selectedPost = usePostStore((state) => state.selectedPost)
   const showPostDetailDialog = usePostStore((state) => state.showPostDetailDialog)
@@ -97,7 +101,7 @@ export const DetailPostDialog = ({ highlightText }) => {
         </DialogHeader>
         <div className="space-y-4">
           <p>{highlightText(selectedPost?.body, searchQuery)}</p>
-          <Comments postId={selectedPost?.id} highlightText={highlightText} searchQuery={searchQuery} />
+          <Comments highlightText={highlightText} />
         </div>
       </DialogContent>
     </Dialog>

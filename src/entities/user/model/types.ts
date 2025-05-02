@@ -17,7 +17,7 @@ export interface User {
   username: string
   password?: string
   birthDate?: string
-  image: string
+  image?: string
   bloodGroup?: string
   height?: number
   weight?: number
