@@ -22,6 +22,8 @@ export const usePostsQuery = () => {
   const skip = usePaginationStore((state) => state.skip)
   const selectedTag = usePostStore((state) => state.selectedTag)
   const searchQuery = usePaginationStore((state) => state.searchQuery)
+  const sortBy = usePaginationStore((state) => state.sortBy)
+  const sortOrder = usePaginationStore((state) => state.sortOrder)
 
   const postsQuery = useQuery({
     queryKey: postKeys.list(limit, skip),
@@ -79,8 +81,33 @@ export const usePostsQuery = () => {
       author: usersQuery.data?.users?.find((user) => user.id === post.userId),
     })) || []
 
+  const sortedPosts = [...postsWithUsers].sort((a, b) => {
+    if (!sortBy || sortBy === "none") return 0
+
+    let valA, valB
+
+    if (sortBy === "id") {
+      valA = a.id
+      valB = b.id
+    } else if (sortBy === "title") {
+      valA = a.title
+      valB = b.title
+    } else if (sortBy === "reactions") {
+      valA = a.reactions?.likes || 0
+      valB = b.reactions?.likes || 0
+    } else {
+      return 0
+    }
+
+    if (sortOrder === "asc") {
+      return valA > valB ? 1 : -1
+    } else {
+      return valA < valB ? 1 : -1
+    }
+  })
+
   return {
-    posts: postsWithUsers,
+    posts: sortedPosts,
     total: activeQuery.data?.total || 0,
     isLoading: activeQuery.isLoading || usersQuery.isLoading,
     isError: activeQuery.isError || usersQuery.isError,
