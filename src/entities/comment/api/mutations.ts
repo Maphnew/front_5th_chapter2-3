@@ -72,7 +72,8 @@ export const useLikeComment = (postId: Post["id"]) => {
         method: "PATCH",
         data: { likes: likes ? likes + 1 : 1 },
       }),
-    onSuccess: (variables: LikeCommentProps) => {
+    onSuccess: (data, variables: LikeCommentProps) => {
+      console.log(data, variables)
       queryClient.setQueriesData({ queryKey: commentKeys.list(postId) }, (prev: PostComments) => {
         return {
           ...prev,

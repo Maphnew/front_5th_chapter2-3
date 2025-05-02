@@ -7,7 +7,6 @@ import { usePaginationStore } from "../../../features/pagination/model/store"
 
 export const useAddPost = () => {
   const total = usePostStore((state) => state.total)
-  const setTotal = usePostStore((state) => state.setTotal)
 
   const limit = usePaginationStore((state) => state.limit)
   const skip = usePaginationStore((state) => state.skip)
@@ -23,8 +22,7 @@ export const useAddPost = () => {
       }) as Promise<Post>,
     onSuccess: (data: Post) => {
       queryClient.setQueriesData({ queryKey: postKeys.list(limit, skip) }, (prev: Posts) => {
-        setTotal(total + 1)
-        return { ...prev, posts: [{ ...data, key: total + 1, id: prev.posts.length + 1 }, ...prev.posts] }
+        return { ...prev, posts: [{ ...data, key: total + 1, id: total + 1 }, ...prev.posts] }
       })
     },
   })

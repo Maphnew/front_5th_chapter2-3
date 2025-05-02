@@ -13,11 +13,13 @@ export const PostTable = ({ highlightText, updateURL, openPostDetail }: PostTabl
   const setSelectedTag = usePostStore((state) => state.setSelectedTag)
   const setSelectedPost = usePostStore((state) => state.setSelectedPost)
   const setShowEditDialog = usePostStore((state) => state.setShowEditDialog)
+  const setTotal = usePostStore((state) => state.setTotal)
 
   const setShowUserModal = useUserStore((state) => state.setShowUserModal)
   const setSelectedUser = useUserStore((state) => state.setSelectedUser)
 
-  const { posts, isLoading, error } = usePostsQuery()
+  const { posts, isLoading, error, total } = usePostsQuery()
+  setTotal(total)
   const deletePost = useDeletePost()
 
   // 사용자 모달 열기
